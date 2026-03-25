@@ -10,6 +10,7 @@ SinglyLinkedList<T>::SinglyLinkedList():head(nullptr),tail(nullptr) {}
 
 template<typename T>
 SinglyLinkedList<T>::~SinglyLinkedList() {
+    if (head != nullptr) {return;}
     SinglyLinkedNode<T>* current = head;
     while (current != nullptr) {
         SinglyLinkedNode<T>* next = current->next;
@@ -147,10 +148,23 @@ bool SinglyLinkedList<T>::insertBefore(const SinglyLinkedNode<T>* pos, const T& 
 }
 template<typename T>
 void SinglyLinkedList<T>::combine(SinglyLinkedList<T>& other) {
-    if (tail == nullptr || head == nullptr) {return;}
+    // if (tail == nullptr || head == nullptr) {return;}
+    // all cases: both heads are empty pass . first list empty pass, second list empty, either tail empty, both populated
+
     if (other.head ==  nullptr ) {return;}
-    tail->next = other.head;
-    tail = other.tail;
+    if (head == nullptr) {
+        head = other.head;
+        tail = other.tail;
+        other.RELEASE();
+        return;
+    }
+    if (tail != nullptr) {tail->next = other.head;} else {head->next = other.head;}
+    if (other.tail !=nullptr) {
+        tail = other.tail;
+    } else {
+        tail = other.head;
+    }
+
     other.RELEASE();
 }
 template<typename T>
