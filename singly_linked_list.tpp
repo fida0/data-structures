@@ -41,7 +41,6 @@ void SinglyLinkedList<T>::print() {
         current = current->next;
     }
 }
-// TODO: Solve Case where head is node, tail is node, and not tail nor head is node
 template<typename T>
 bool SinglyLinkedList<T>::remove(const SinglyLinkedNode<T>* node) {
     SinglyLinkedNode<T>* current = head;
@@ -49,13 +48,34 @@ bool SinglyLinkedList<T>::remove(const SinglyLinkedNode<T>* node) {
     while (current != nullptr) {
         if (current->next == node) {prevNode = current;}
         if (current == node) {
-            if (current == head) {head = current->next;} else {prevNode->next = current->next;}
-            delete[] current;
+            if (current == head) {destroyHead();}
+            else {destroyNode(prevNode, current);}
             return true;
         }
         current = current->next;
     }
     return false;
+}
+template<typename T>
+int SinglyLinkedList<T>::removeByValue(const T& value) {
+    SinglyLinkedNode<T>* current = head;
+    SinglyLinkedNode<T>* prev{};
+    int removed{};
+    while (current != nullptr) {
+        if (current->value == value) {
+            SinglyLinkedNode<T>* nodeToDelete = current;
+            current = current->next;
+            if (prev == nullptr) {head = head->next;} else {prev->next = current;}
+            if (nodeToDelete == tail) {tail = prev;}
+            delete nodeToDelete;
+            ++removed;
+        } else {
+            prev = current;
+            current = current->next;
+        }
+    }
+    if (head == nullptr) {tail = nullptr;}
+    return removed;
 }
 template<typename T>
 SinglyLinkedNode<T>* SinglyLinkedList<T>::findByValue(const T& value) {
@@ -95,7 +115,7 @@ bool SinglyLinkedList<T>::insertAfter(const SinglyLinkedNode<T>* pos, const T& v
     SinglyLinkedNode<T>* current = head;
     while (current != nullptr) {
         if (current == pos) {
-            newNode.next = current->next;
+            newNode->next = current->next;
             current->next = newNode;
             return true;
         }
@@ -106,20 +126,29 @@ bool SinglyLinkedList<T>::insertAfter(const SinglyLinkedNode<T>* pos, const T& v
 template<typename T>
 bool SinglyLinkedList<T>::insertBefore(const SinglyLinkedNode<T>* pos, const T& value) {
     if (pos == nullptr) {return false;}
-    auto newNode = new SinglyLinkedNode<T>(value);
+    if (head == pos) {
+        auto* newNode = new SinglyLinkedNode<T>(value);
+        newNode->next = head;
+        head = newNode;
+        if (tail == nullptr) {tail = newNode;}
+        return true;
+    }
     SinglyLinkedNode<T>* current = head;
     while (current != nullptr) {
         if (current->next == pos) {
-            newNode->next = pos;
+            auto newNode = new SinglyLinkedNode<T>(value);
+            newNode->next = current->next;
             current->next = newNode;
             return true;
         }
+        current = current->next;
     }
     return false;
 }
 template<typename T>
 void SinglyLinkedList<T>::combine(SinglyLinkedList<T>& other) {
-    if (other.head == nullptr) {return;}
+    if (tail == nullptr || head == nullptr) {return;}
+    if (other.head ==  nullptr ) {return;}
     tail->next = other.head;
     tail = other.tail;
     other.RELEASE();
