@@ -16,6 +16,7 @@ private:
     void RELEASE() {head = tail = {};}
     void destroyHead() {
         auto temp = head;
+        if (tail == head) {tail = nullptr;}
         head = head->next;
         delete temp;
     }
