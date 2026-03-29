@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 4.1)
+project(untitled1)
+
+set(CMAKE_CXX_STANDARD 20)
+
+add_executable(untitled1 main.cpp
+        singly_linked_list.tpp
+        singly_linked_list.h
+        nodes.tpp
+        nodes.h)
