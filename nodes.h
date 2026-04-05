@@ -6,14 +6,23 @@
 #define DATA_STRUCTURES_NODES_H
 
 
-template <typename T> struct SinglyLinkedNode {
+template <typename T> struct forwardNode {
     T value;
-    SinglyLinkedNode* next;
-    SinglyLinkedNode();
-    explicit SinglyLinkedNode(const T& val);
+    forwardNode* next;
+    forwardNode();
+    explicit forwardNode(const T& val);
 
 };
 
+template <typename T> struct doubleNode {
+    T value;
+    doubleNode* prev;
+    doubleNode* next;
+
+    doubleNode();
+    explicit doubleNode(const T& val);
+    explicit doubleNode(const T& val,doubleNode* prev,doubleNode* next );
+};
 
 #include "nodes.tpp"
 #endif //DATA_STRUCTURES_NODES_H

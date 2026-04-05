@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "singly_linked_list.h"
+#include "forwardList.h"
 
 struct TestRunner {
     int passed = 0;
@@ -18,9 +18,9 @@ struct TestRunner {
     }
 };
 
-static bool listMatches(SinglyLinkedList<int>& list, const std::vector<int>& expected) {
+static bool listMatches(forwardList<int>& list, const std::vector<int>& expected) {
     for (int i = 0; i < static_cast<int>(expected.size()); ++i) {
-        auto* node = list.findByIndex(i);
+        auto *node = list.findByIndex(i);
         if (node == nullptr || node->value != expected[i]) {
             return false;
         }
@@ -33,7 +33,7 @@ int main() {
 
     // constructor + empty + clear
     {
-        SinglyLinkedList<int> list;
+        forwardList<int> list;
         tr.check(list.empty(), "constructor creates empty list");
         list.clear();
         tr.check(list.empty(), "clear on empty list");
@@ -43,7 +43,7 @@ int main() {
 
     // append + print smoke test
     {
-        SinglyLinkedList<int> list;
+        forwardList<int> list;
         tr.check(list.append(10), "append first element");
         tr.check(list.append(20), "append second element");
         tr.check(!list.empty(), "list not empty after append");
@@ -54,31 +54,31 @@ int main() {
 
     // findByValue + findByIndex + pop
     {
-        SinglyLinkedList<int> list;
+        forwardList<int> list;
         list.append(4);
         list.append(7);
         list.append(9);
 
-        auto* node7 = list.findByValue(7);
+        auto *node7 = list.findByValue(7);
         tr.check(node7 != nullptr && node7->value == 7, "findByValue found");
         tr.check(list.findByValue(99) == nullptr, "findByValue not found");
 
-        auto* idx0 = list.findByIndex(0);
-        auto* idx2 = list.findByIndex(2);
+        auto *idx0 = list.findByIndex(0);
+        auto *idx2 = list.findByIndex(2);
         tr.check(idx0 != nullptr && idx0->value == 4, "findByIndex first");
         tr.check(idx2 != nullptr && idx2->value == 9, "findByIndex last valid");
         tr.check(list.findByIndex(3) == nullptr, "findByIndex out of range");
         tr.check(list.findByIndex(-1) == nullptr, "findByIndex negative");
 
         tr.check(list.pop(node7) == node7, "pop found pointer");
-        SinglyLinkedNode<int> outsideNode(123);
+        forwardNode<int> outsideNode(123);
         tr.check(list.pop(&outsideNode) == nullptr, "pop node not in list");
         tr.check(list.pop(nullptr) == nullptr, "pop nullptr");
     }
 
     // remove (head, middle, tail, null, not found)
     {
-        SinglyLinkedList<int> list;
+        forwardList<int> list;
         list.append(1);
         list.append(2);
         list.append(3);
@@ -86,25 +86,25 @@ int main() {
 
         tr.check(!list.remove(nullptr), "remove nullptr returns false");
 
-        auto* headNode = list.findByIndex(0);
+        auto *headNode = list.findByIndex(0);
         tr.check(list.remove(headNode), "remove head");
         tr.check(listMatches(list, {2, 3, 4}), "state after removing head");
 
-        auto* middleNode = list.findByValue(3);
+        auto *middleNode = list.findByValue(3);
         tr.check(list.remove(middleNode), "remove middle");
         tr.check(listMatches(list, {2, 4}), "state after removing middle");
 
-        auto* tailNode = list.findByValue(4);
+        auto *tailNode = list.findByValue(4);
         tr.check(list.remove(tailNode), "remove tail");
         tr.check(listMatches(list, {2}), "state after removing tail");
 
-        SinglyLinkedNode<int> outsideNode(777);
+        forwardNode<int> outsideNode(777);
         tr.check(!list.remove(&outsideNode), "remove node not in list");
     }
 
     // removeByValue (zero, one, many, all)
     {
-        SinglyLinkedList<int> list;
+        forwardList<int> list;
         tr.check(list.removeByValue(5) == 0, "removeByValue on empty list");
 
         list.append(1);
@@ -128,52 +128,52 @@ int main() {
 
     // insertAfter (valid, tail, null, not found)
     {
-        SinglyLinkedList<int> list;
+        forwardList<int> list;
         list.append(1);
         list.append(3);
 
-        auto* one = list.findByValue(1);
+        auto *one = list.findByValue(1);
         tr.check(list.insertAfter(one, 2), "insertAfter valid middle position");
         tr.check(listMatches(list, {1, 2, 3}), "state after insertAfter middle");
 
-        auto* tail = list.findByValue(3);
+        auto *tail = list.findByValue(3);
         tr.check(list.insertAfter(tail, 4), "insertAfter tail");
         tr.check(listMatches(list, {1, 2, 3, 4}), "state after insertAfter tail");
 
         tr.check(!list.insertAfter(nullptr, 99), "insertAfter nullptr position");
 
-        SinglyLinkedNode<int> outsideNode(500);
+        forwardNode<int> outsideNode(500);
         tr.check(!list.insertAfter(&outsideNode, 99), "insertAfter node not in list");
     }
 
     // insertBefore (valid, head, null, not found, empty list)
     {
-        SinglyLinkedList<int> list;
+        forwardList<int> list;
         list.append(1);
         list.append(2);
         list.append(3);
 
         tr.check(!list.insertBefore(nullptr, 99), "insertBefore nullptr position");
 
-        auto* two = list.findByValue(2);
+        auto *two = list.findByValue(2);
         tr.check(list.insertBefore(two, 99), "insertBefore valid middle position");
         tr.check(listMatches(list, {1, 99, 2, 3}), "state after insertBefore middle");
 
-        auto* head = list.findByIndex(0);
+        auto *head = list.findByIndex(0);
         tr.check(list.insertBefore(head, 0), "insertBefore head");
         tr.check(listMatches(list, {0, 1, 99, 2, 3}), "state after insertBefore head");
 
-        SinglyLinkedNode<int> outsideNode(800);
+        forwardNode<int> outsideNode(800);
         tr.check(!list.insertBefore(&outsideNode, 77), "insertBefore node not in list");
 
-        SinglyLinkedList<int> emptyList;
+        forwardList<int> emptyList;
         tr.check(!emptyList.insertBefore(&outsideNode, 10), "insertBefore on empty list");
     }
 
     // combine (all combinations)
     {
-        SinglyLinkedList<int> a;
-        SinglyLinkedList<int> b;
+        forwardList<int> a;
+        forwardList<int> b;
         b.append(7);
         b.append(8);
 
@@ -181,23 +181,23 @@ int main() {
         tr.check(listMatches(a, {7, 8}), "combine empty + non-empty moves nodes");
         tr.check(b.empty(), "combine releases other list when moved");
 
-        SinglyLinkedList<int> c;
+        forwardList<int> c;
         c.append(1);
         c.append(2);
-        SinglyLinkedList<int> d;
+        forwardList<int> d;
 
         c.combine(d);
         tr.check(listMatches(c, {1, 2}), "combine non-empty + empty keeps original");
         tr.check(d.empty(), "combine with empty other keeps other empty");
 
-        SinglyLinkedList<int> e;
-        SinglyLinkedList<int> f;
+        forwardList<int> e;
+        forwardList<int> f;
         e.combine(f);
         tr.check(e.empty() && f.empty(), "combine empty + empty");
 
-        SinglyLinkedList<int> g;
+        forwardList<int> g;
         g.append(1);
-        SinglyLinkedList<int> h;
+        forwardList<int> h;
         h.append(2);
         h.append(3);
         g.combine(h);
@@ -207,15 +207,15 @@ int main() {
 
     // destructor scope test (no explicit assert, but ensures code path is exercised)
     {
-        SinglyLinkedList<int> scoped;
+        forwardList<int> scoped;
         scoped.append(11);
         scoped.append(22);
     }
     tr.check(true, "destructor scope exit smoke test");
 
     std::cout << "\nPassed: " << tr.passed
-              << "\nFailed: " << tr.failed
-              << "\nTotal : " << (tr.passed + tr.failed) << '\n';
+            << "\nFailed: " << tr.failed
+            << "\nTotal : " << (tr.passed + tr.failed) << '\n';
 
     return tr.failed == 0 ? 0 : 1;
 }
